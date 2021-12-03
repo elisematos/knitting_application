@@ -24,6 +24,5 @@ public class Pattern {
     private String yarn;
     private String description;
     private String instructions;
-    private Instant updated;
     private Instant created;
 }
