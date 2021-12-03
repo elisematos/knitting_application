@@ -2,11 +2,10 @@ package com.application.knitting.model;
 
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -25,4 +24,9 @@ public class Pattern {
     private String description;
     private String instructions;
     private Instant created;
+    @ManyToMany
+    @JoinTable(name = "pattern_material",
+    joinColumns = @JoinColumn(name = "pattern_id"),
+    inverseJoinColumns = @JoinColumn(name = "material_id"))
+    private List<Material> materialList = new ArrayList<>();
 }
