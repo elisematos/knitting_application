@@ -12,7 +12,6 @@ import java.time.Instant;
 @NoArgsConstructor
 @Builder
 public class PatternDto {
-    private Long id;
     private String name;
     private Integer numberOfRows;
     private Integer numberOfStitches;

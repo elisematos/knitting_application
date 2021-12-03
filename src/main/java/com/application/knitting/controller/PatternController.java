@@ -2,10 +2,12 @@ package com.application.knitting.controller;
 
 import com.application.knitting.dto.PatternDto;
 import com.application.knitting.service.PatternService;
+import com.itextpdf.text.DocumentException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Map;
 
@@ -38,5 +40,11 @@ public class PatternController {
     @ResponseStatus(HttpStatus.OK)
     public Map<String, Boolean> deletePattern(@PathVariable(value = "id") long id) {
         return patternService.deletePattern(id);
+    }
+
+    @PostMapping("{id}/pdf")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void createPdf(@PathVariable long id) throws DocumentException, FileNotFoundException {
+        patternService.createPDF(id);
     }
 }
