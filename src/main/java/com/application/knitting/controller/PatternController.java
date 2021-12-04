@@ -4,7 +4,9 @@ import com.application.knitting.dto.PatternDto;
 import com.application.knitting.service.PatternService;
 import com.itextpdf.text.DocumentException;
 import lombok.AllArgsConstructor;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.FileNotFoundException;
@@ -47,4 +49,11 @@ public class PatternController {
     public void createPdf(@PathVariable long id) throws DocumentException, FileNotFoundException {
         patternService.createPDF(id);
     }
+
+    @GetMapping("{id}/pdf")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<InputStreamResource> getPdf(@PathVariable long id) throws FileNotFoundException {
+        return patternService.getPDF(id);
+    }
+
 }

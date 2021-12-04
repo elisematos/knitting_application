@@ -23,6 +23,7 @@ public class PdfService {
             Font.BOLD);
     private static final Font SMALL_NORMAL = new Font(Font.FontFamily.TIMES_ROMAN, 12,
             Font.NORMAL);
+    public static final String PDF_DIRECTORY = "assets/pdf/";
 
     public void makeDocument(String fileName,
                              String title,
@@ -35,7 +36,7 @@ public class PdfService {
     )
             throws FileNotFoundException, DocumentException {
         Document document = new Document();
-        PdfWriter.getInstance(document, new FileOutputStream("assets/pdf/" + fileName + ".pdf"));
+        PdfWriter.getInstance(document, new FileOutputStream(PDF_DIRECTORY + fileName));
         document.open();
         addMetaData(document);
         addTitlePage(document, title);
