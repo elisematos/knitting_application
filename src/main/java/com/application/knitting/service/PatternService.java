@@ -72,7 +72,7 @@ public class PatternService {
         );
     }
 
-    public ResponseEntity<InputStreamResource> getPDF(long id) throws FileNotFoundException {
+    public ResponseEntity<InputStreamResource> getPDF(long id) throws FileNotFoundException, PatternNotFoundException {
         Pattern pattern = patternRepository.findById(id).orElseThrow(
                 ()-> new PatternNotFoundException("Pattern not found with id : " + id)
         );
@@ -86,8 +86,8 @@ public class PatternService {
         headers.add("Expires", "0");
 
         return ResponseEntity.ok().headers(headers).headers(headers)
-               .contentLength(file.length())
-               .contentType(MediaType.parseMediaType("application/pdf")).body(resource);
+                .contentLength(file.length())
+                .contentType(MediaType.parseMediaType("application/pdf")).body(resource);
     }
 
     private static Pattern toEntity(PatternDto patternDto) {

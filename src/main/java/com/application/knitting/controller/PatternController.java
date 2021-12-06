@@ -1,6 +1,7 @@
 package com.application.knitting.controller;
 
 import com.application.knitting.dto.PatternDto;
+import com.application.knitting.exception.PatternNotFoundException;
 import com.application.knitting.service.PatternService;
 import com.itextpdf.text.DocumentException;
 import lombok.AllArgsConstructor;
@@ -52,8 +53,8 @@ public class PatternController {
 
     @GetMapping("{id}/pdf")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<InputStreamResource> getPdf(@PathVariable long id) throws FileNotFoundException {
+    public ResponseEntity<InputStreamResource> getPdf(@PathVariable long id)
+            throws FileNotFoundException, PatternNotFoundException {
         return patternService.getPDF(id);
     }
-
 }
