@@ -28,29 +28,28 @@ import static com.application.knitting.service.PdfService.PDF_DIRECTORY;
 public class PatternService {
     private final PatternRepository patternRepository;
     private final PdfService pdfService;
+    private final PhotoService photoService;
+    private final MaterialService materialService;
 
     public void createPattern(PatternDto patternDto) {
-        Pattern pattern = toEntity(patternDto);
-        patternRepository.save(pattern);
+        patternRepository.save(toEntity(patternDto));
     }
 
-    public PatternDto getPattern(Long id) {
+    public PatternDto getPattern(long id) {
         Pattern pattern = patternRepository.findById(id)
-                .orElseThrow(() -> new PatternNotFoundException(id.toString()));
+                .orElseThrow(() -> new PatternNotFoundException("Le patron "+ id + "est introuvable."));
         return toDto(pattern);
     }
 
-    public ArrayList<PatternDto> getPatternList()  {
-        return (ArrayList<PatternDto>) patternRepository.findAll()
+    public List<PatternDto> getPatternList()  {
+        return  patternRepository.findAll()
                 .stream()
-                .map(PatternService::toDto)
+                .map(this::toDto)
                 .collect(Collectors.toList());
     }
 
     public Map<String, Boolean> deletePattern(Long id) {
-        Pattern pattern = patternRepository.findById(id).orElseThrow(
-                () -> new PatternNotFoundException("Pattern with id: " + id + " was not found.")
-        );
+        Pattern pattern = getPatternEntity(id);
         patternRepository.delete(pattern);
         Map<String, Boolean> response = new HashMap<>();
         response.put("deleted", Boolean.TRUE);
@@ -58,9 +57,7 @@ public class PatternService {
     }
 
     public void createPDF(long id) throws DocumentException, FileNotFoundException {
-        Pattern pattern = patternRepository.findById(id).orElseThrow(
-                ()-> new PatternNotFoundException("Pattern not found with id : " + id)
-        );
+        Pattern pattern = getPatternEntity(id);
         pdfService.makeDocument(pattern.getName() + ".pdf",
                 pattern.getName(),
                 pattern.getDescription(),
@@ -73,9 +70,7 @@ public class PatternService {
     }
 
     public ResponseEntity<InputStreamResource> getPDF(long id) throws FileNotFoundException, PatternNotFoundException {
-        Pattern pattern = patternRepository.findById(id).orElseThrow(
-                ()-> new PatternNotFoundException("Pattern not found with id : " + id)
-        );
+        Pattern pattern = getPatternEntity(id);
         String filename = PDF_DIRECTORY + pattern.getName() + ".pdf";
         File file = new File(filename);
         InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
@@ -84,13 +79,12 @@ public class PatternService {
         headers.add("Content-Disposition", String.format("attachment; filename=\"%s\"", file.getName()));
         headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
         headers.add("Expires", "0");
-
         return ResponseEntity.ok().headers(headers).headers(headers)
                 .contentLength(file.length())
                 .contentType(MediaType.parseMediaType("application/pdf")).body(resource);
     }
 
-    private static Pattern toEntity(PatternDto patternDto) {
+    private Pattern toEntity(PatternDto patternDto) {
         return Pattern.builder()
                 .name(patternDto.getName())
                 .numberOfRows(patternDto.getNumberOfRows())
@@ -98,11 +92,13 @@ public class PatternService {
                 .yarn(patternDto.getYarn())
                 .description(patternDto.getDescription())
                 .instructions(patternDto.getInstructions())
+                .photoList(photoService.mapListDtoToList(patternDto.getPhotoDtoList()))
+                .materialList(materialService.mapListDtoToList(patternDto.getMaterialDtoList()))
                 .created(Instant.now())
                 .build();
     }
 
-    private static PatternDto toDto(Pattern pattern) {
+    private PatternDto toDto(Pattern pattern) {
         return PatternDto.builder()
                 .name(pattern.getName())
                 .numberOfRows(pattern.getNumberOfRows())
@@ -110,7 +106,15 @@ public class PatternService {
                 .yarn(pattern.getYarn())
                 .description(pattern.getDescription())
                 .instructions(pattern.getInstructions())
+                .photoDtoList(photoService.mapListToListDto(pattern.getPhotoList()))
+                .materialDtoList(materialService.mapListToListDto(pattern.getMaterialList()))
                 .created(pattern.getCreated())
                 .build();
+    }
+
+    private Pattern getPatternEntity(long id) {
+        return patternRepository.findById(id).orElseThrow(
+                ()-> new PatternNotFoundException("Pattern not found with id : " + id)
+        );
     }
 }

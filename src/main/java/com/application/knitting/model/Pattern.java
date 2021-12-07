@@ -29,4 +29,6 @@ public class Pattern {
     joinColumns = @JoinColumn(name = "pattern_id"),
     inverseJoinColumns = @JoinColumn(name = "material_id"))
     private List<Material> materialList = new ArrayList<>();
+    @OneToMany
+    private List<Photo> photoList = new ArrayList<>();
 }
